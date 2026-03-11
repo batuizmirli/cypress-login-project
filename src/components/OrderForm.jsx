@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import axios from 'axios';
 
-const reqresApiKey = import.meta.env.VITE_REQRES_API_KEY || 'reqres-free-v1';
+const reqresApiKey = 'reqres_2c589009ea07422c8f110ab992c30846';
 
 const sizes = ['Küçük', 'Orta', 'Büyük'];
 const toppings = [
