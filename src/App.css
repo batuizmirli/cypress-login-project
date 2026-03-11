@@ -7,13 +7,20 @@
 
 .home-hero {
   min-height: 68vh;
-  background: linear-gradient(rgba(206, 40, 41, 0.95), rgba(206, 40, 41, 0.95));
+  background:
+    linear-gradient(rgba(206, 40, 41, 0.72), rgba(206, 40, 41, 0.82)),
+    url('/iteration-1-images/home-banner.png') center/cover no-repeat;
   color: #fff;
   display: grid;
   place-content: center;
   text-align: center;
   gap: 1rem;
   padding: 2rem 1rem;
+}
+
+.hero-logo {
+  width: min(340px, 75vw);
+  justify-self: center;
 }
 
 .hero-brand {

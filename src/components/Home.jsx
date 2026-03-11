@@ -2,6 +2,7 @@ export default function Home({ onStartOrder }) {
   return (
     <main id="home" className="home-page">
       <header className="home-hero" aria-label="Pizza kampanya alanı">
+        <img src="/iteration-1-images/logo.svg" alt="Teknolojik Yemekler logosu" className="hero-logo" />
         <p className="hero-brand">lezzetin yolda</p>
         <h1>KOD ACIKTIRIR PİZZA, DOYURUR</h1>
         <a
