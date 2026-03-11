@@ -24,6 +24,14 @@ const initialForm = {
   ozel: '',
 };
 
+const sizePrices = {
+  'Küçük': 220,
+  'Orta': 280,
+  'Büyük': 340,
+};
+
+const toppingPrice = 25;
+
 export default function OrderForm({ onOrderSuccess }) {
   const [formData, setFormData] = useState(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,6 +41,9 @@ export default function OrderForm({ onOrderSuccess }) {
   const sizeValid = Boolean(formData.boyut);
   const toppingsValid = formData.malzemeler.length >= 4 && formData.malzemeler.length <= 10;
   const isFormValid = nameValid && sizeValid && toppingsValid;
+  const basePrice = sizePrices[formData.boyut] ?? 0;
+  const toppingsTotal = formData.malzemeler.length * toppingPrice;
+  const totalPrice = basePrice + toppingsTotal;
 
   const errorText = useMemo(() => {
     if (!nameValid) return 'İsim en az 3 karakter olmalı.';
@@ -82,7 +93,15 @@ export default function OrderForm({ onOrderSuccess }) {
       });
 
       console.log('Sipariş özeti:', response.data);
-      onOrderSuccess(response.data);
+      onOrderSuccess({
+        ...response.data,
+        orderPayload: formData,
+        pricing: {
+          basePrice,
+          toppingsTotal,
+          totalPrice,
+        },
+      });
       setFormData(initialForm);
     } catch (error) {
       setRequestError('İnternet bağlantısı veya sunucu hatası oluştu. Lütfen tekrar dene.');
@@ -97,6 +116,15 @@ export default function OrderForm({ onOrderSuccess }) {
       <section className="order-header">
         <h2>Pizza Sipariş Formu</h2>
         <p>Boyutunu seç, malzemeleri işaretle, siparişi tamamla.</p>
+      </section>
+
+      <section className="order-summary" data-cy="order-summary">
+        <h3>Canlı Sipariş Özeti</h3>
+        <p><strong>İsim:</strong> {formData.isim || '-'}</p>
+        <p><strong>Boyut:</strong> {formData.boyut || '-'}</p>
+        <p><strong>Malzemeler:</strong> {formData.malzemeler.length > 0 ? formData.malzemeler.join(', ') : '-'}</p>
+        <p><strong>Not:</strong> {formData.ozel || '-'}</p>
+        <p><strong>Toplam:</strong> ₺{totalPrice}</p>
       </section>
 
       <form className="order-form" onSubmit={handleSubmit}>
