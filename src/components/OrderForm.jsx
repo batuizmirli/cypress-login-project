@@ -20,17 +20,19 @@ const toppings = [
 const initialForm = {
   isim: '',
   boyut: '',
+  hamur: 'İnce Kenar',
   malzemeler: [],
   ozel: '',
+  adet: 1,
 };
 
 const sizePrices = {
-  'Küçük': 220,
-  'Orta': 280,
-  'Büyük': 340,
+  'Küçük': 85.5,
+  'Orta': 95.5,
+  'Büyük': 105.5,
 };
 
-const toppingPrice = 25;
+const toppingPrice = 5;
 
 export default function OrderForm({ onOrderSuccess, onGoHome }) {
   const [formData, setFormData] = useState(initialForm);
@@ -43,7 +45,7 @@ export default function OrderForm({ onOrderSuccess, onGoHome }) {
   const isFormValid = nameValid && sizeValid && toppingsValid;
   const basePrice = sizePrices[formData.boyut] ?? 0;
   const toppingsTotal = formData.malzemeler.length * toppingPrice;
-  const totalPrice = basePrice + toppingsTotal;
+  const totalPrice = (basePrice + toppingsTotal) * formData.adet;
 
   const errorText = useMemo(() => {
     if (!nameValid) return 'İsim en az 3 karakter olmalı.';
@@ -59,6 +61,13 @@ export default function OrderForm({ onOrderSuccess, onGoHome }) {
 
   const handleSizeChange = (event) => {
     setFormData((prev) => ({ ...prev, boyut: event.target.value }));
+  };
+
+  const handleQuantity = (step) => {
+    setFormData((prev) => ({
+      ...prev,
+      adet: Math.max(1, prev.adet + step),
+    }));
   };
 
   const handleToppingChange = (event) => {
@@ -131,17 +140,19 @@ export default function OrderForm({ onOrderSuccess, onGoHome }) {
       </header>
 
       <section className="order-header page-content-wrap">
-        <h2>Pizza Sipariş Formu</h2>
-        <p>Boyutunu seç, malzemeleri işaretle, siparişi tamamla.</p>
-      </section>
-
-      <section className="order-summary page-content-wrap" data-cy="order-summary">
-        <h3>Canlı Sipariş Özeti</h3>
-        <p><strong>İsim:</strong> {formData.isim || '-'}</p>
-        <p><strong>Boyut:</strong> {formData.boyut || '-'}</p>
-        <p><strong>Malzemeler:</strong> {formData.malzemeler.length > 0 ? formData.malzemeler.join(', ') : '-'}</p>
-        <p><strong>Not:</strong> {formData.ozel || '-'}</p>
-        <p><strong>Toplam:</strong> ₺{totalPrice}</p>
+        <h2>Position Absolute Acı Pizza</h2>
+        <div className="price-line">
+          <p className="price">85.50₺</p>
+          <p className="muted">4.9</p>
+          <p className="muted">(200)</p>
+        </div>
+        <p className="desc">
+          Frontend Dev olarak hala position:absolute kullanıyorsan bu çok acı pizza tam sana göre.
+          Pizza, domates, peynir ve genellikle çeşitli diğer malzemelerle kaplanmış,
+          daha sonra genellikle olarak odun ateşinde bir fırında yüksek sıcaklıkta pişirilen,
+          genellikle yuvarlak, düzleştirilmiş maya bazlı buğday hamurundan oluşan İtalyan
+          kökenli lezzetli bir yemektir.
+        </p>
       </section>
 
       <form className="order-form page-content-wrap" onSubmit={handleSubmit}>
@@ -181,6 +192,15 @@ export default function OrderForm({ onOrderSuccess, onGoHome }) {
           </div>
         </fieldset>
 
+        <div className="form-group">
+          <label htmlFor="hamur">Hamur Seç</label>
+          <select id="hamur" name="hamur" value={formData.hamur} onChange={handleTextChange}>
+            <option>İnce Kenar</option>
+            <option>Klasik</option>
+            <option>Kalın</option>
+          </select>
+        </div>
+
         <fieldset className="form-group">
           <legend>Malzemeler (4-10 arası)</legend>
           <div className="toppings-grid">
@@ -217,9 +237,29 @@ export default function OrderForm({ onOrderSuccess, onGoHome }) {
         {!isFormValid && <p className="form-error" data-cy="validation-error">{errorText}</p>}
         {requestError && <p className="form-error">{requestError}</p>}
 
-        <button type="submit" disabled={!isFormValid || isSubmitting} data-cy="submit-order-btn">
-          {isSubmitting ? 'Gönderiliyor...' : 'Sipariş Ver'}
-        </button>
+        <div className="bottom-row">
+          <div className="qty-box" aria-label="Sipariş adedi">
+            <button type="button" onClick={() => handleQuantity(-1)}>-</button>
+            <span>{formData.adet}</span>
+            <button type="button" onClick={() => handleQuantity(1)}>+</button>
+          </div>
+
+          <div className="total-card" data-cy="order-summary">
+            <h3>Sipariş Toplamı</h3>
+            <p>
+              <span>Seçimler</span>
+              <strong>{(toppingsTotal * formData.adet).toFixed(2)}₺</strong>
+            </p>
+            <p className="final-total">
+              <span>Toplam</span>
+              <strong>{totalPrice.toFixed(2)}₺</strong>
+            </p>
+
+            <button type="submit" disabled={!isFormValid || isSubmitting} data-cy="submit-order-btn">
+              {isSubmitting ? 'Gönderiliyor...' : 'SİPARİŞ VER'}
+            </button>
+          </div>
+        </div>
       </form>
     </main>
   );

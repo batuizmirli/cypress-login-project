@@ -26,7 +26,6 @@ function App() {
           orderResponse={orderResponse}
           onCreateNewOrder={() => setPage('form')}
           onGoHome={() => setPage('home')}
-          onGoForm={() => setPage('form')}
         />
       )}
     </>
